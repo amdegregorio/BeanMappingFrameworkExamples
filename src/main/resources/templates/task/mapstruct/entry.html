@@ -9,7 +9,7 @@
 <h1>Task Entry</h1>
 <div class="input-form">
 <form th:action="@{/__${action}__}" th:object="${taskDto}" method="post">
-   <input th:field="*{id}" id="id" type="hidden" th:if="${action}=='task/jmapper/edit'"/>
+   <input th:field="*{id}" id="id" type="hidden" th:if="${action}=='task/mapstruct/edit'"/>
    <div>
      <label class="active" for="description">Description</label>
 	 <input th:field="*{description}" id="description" type="text"/>

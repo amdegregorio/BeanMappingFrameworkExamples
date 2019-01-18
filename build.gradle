@@ -27,6 +27,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
    implementation 'com.googlecode.jmapper-framework:jmapper-core:1.6.0.1'
+   implementation 'org.mapstruct:mapstruct:1.2.0.Final'
+   implementation 'org.mapstruct:mapstruct-processor:1.2.0.Final'
+   implementation 'com.github.dozermapper:dozer-core:6.4.1'
+   implementation 'ma.glasnost.orika:orika-core:1.5.2'
 	runtimeOnly 'com.h2database:h2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

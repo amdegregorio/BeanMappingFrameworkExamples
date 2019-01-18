@@ -4,24 +4,13 @@ import java.time.LocalDate;
 
 import javax.validation.constraints.NotNull;
 
-import com.amydegregorio.mappers.util.Priorities;
-import com.amydegregorio.mappers.util.Statuses;
-import com.googlecode.jmapper.annotations.JMap;
-import com.googlecode.jmapper.annotations.JMapConversion;
-
 public class TaskDto {
-   @JMap
    private Long id;
    @NotNull
-   @JMap
    private String description;
-   @JMap
    private LocalDate startDate;
-   @JMap
    private LocalDate completionDate;
-   @JMap
    private String priority;
-   @JMap
    private String status;
    
    public Long getId() {
@@ -78,33 +67,4 @@ public class TaskDto {
                + completionDate + ", priority=" + priority + ", status=" + status + "]";
    }
    
-   @JMapConversion(from = {"priority"}, to = {"priority"}) 
-   public String convertPriority(Priorities priority){
-      switch(priority) {
-         case HIGH:
-            return "HIGH";
-         case MEDIUM:
-            return "MEDIUM";
-         case LOW:
-            return "LOW";
-         case URGENT:
-            return "URGENT";
-         default:
-            return "";
-      }
-   }
-   
-   @JMapConversion(from = {"status"}, to = {"status"})
-   public String convertStatus(Statuses status) {
-      switch(status) {
-         case NOT_STARTED:
-            return "NOT_STARTED";
-         case IN_PROGRESS:
-            return "IN_PROGRESS";
-         case COMPLETE:
-            return "COMPLETE";
-         default:
-            return "";
-      }
-   }
 }

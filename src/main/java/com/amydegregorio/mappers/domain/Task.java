@@ -9,25 +9,17 @@ import javax.persistence.Id;
 
 import com.amydegregorio.mappers.util.Priorities;
 import com.amydegregorio.mappers.util.Statuses;
-import com.googlecode.jmapper.annotations.JMap;
-import com.googlecode.jmapper.annotations.JMapConversion;
 
 @Entity
 public class Task {
    
    @Id
    @GeneratedValue(strategy=GenerationType.AUTO)
-   @JMap
    private Long id;
-   @JMap
    private String description;
-   @JMap
    private LocalDate startDate;
-   @JMap
    private LocalDate completionDate;
-   @JMap
    private Priorities priority;
-   @JMap
    private Statuses status;
    
    public Long getId() {
@@ -83,35 +75,5 @@ public class Task {
       return "Task [id=" + id + ", description=" + description + ", startDate=" + startDate + ", completionDate="
                + completionDate + ", priority=" + priority + ", status=" + status + "]";
    }
-   
-   @JMapConversion(from = {"priority"}, to = {"priority"}) 
-   public Priorities convertPriority(String priority){
-      switch(priority) {
-         case "HIGH":
-            return Priorities.HIGH;
-         case "MEDIUM":
-            return Priorities.MEDIUM;
-         case "LOW":
-            return Priorities.LOW;
-         case "URGENT":
-            return Priorities.URGENT;
-         default:
-            return null;
-      }
-   }
-   
-   @JMapConversion(from = {"status"}, to = {"status"})
-   public Statuses convertStatus(String status) {
-      switch(status) {
-         case "NOT_STARTED":
-            return Statuses.NOT_STARTED;
-         case "IN_PROGRESS":
-            return Statuses.IN_PROGRESS;
-         case "COMPLETE":
-            return Statuses.COMPLETE;
-         default:
-            return null;
-      }
-   }
-
+  
 }

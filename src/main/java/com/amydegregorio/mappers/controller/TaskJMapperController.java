@@ -1,5 +1,9 @@
 package com.amydegregorio.mappers.controller;
 
+import static com.googlecode.jmapper.api.JMapperAPI.conversion;
+import static com.googlecode.jmapper.api.JMapperAPI.global;
+import static com.googlecode.jmapper.api.JMapperAPI.mappedClass;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +26,8 @@ import com.amydegregorio.mappers.repository.TaskRepository;
 import com.amydegregorio.mappers.util.Priorities;
 import com.amydegregorio.mappers.util.Statuses;
 import com.googlecode.jmapper.JMapper;
+import com.googlecode.jmapper.annotations.JMapConversion;
+import com.googlecode.jmapper.api.JMapperAPI;
 
 @Controller
 @RequestMapping("/task/jmapper")
@@ -35,8 +41,60 @@ public class TaskJMapperController {
    private JMapper<Task, TaskDto> incomingMapper;
    
    public TaskJMapperController() {
-      outgoingMapper = new JMapper<>(TaskDto.class, Task.class);
-      incomingMapper = new JMapper<>(Task.class, TaskDto.class);
+      JMapperAPI outgoingAPI = new JMapperAPI();
+      outgoingAPI.add(mappedClass(TaskDto.class).add(global())
+               .add(conversion("priority")
+                  .from("priority").to("priority")
+                  .type(JMapConversion.Type.DYNAMIC)
+                  .body("if (${source} == com.amydegregorio.mappers.util.Priorities.HIGH) {"
+                      + "return \"HIGH\"; } "
+                      + "else if (${source} == com.amydegregorio.mappers.util.Priorities.MEDIUM) {"
+                      + "return \"MEDIUM\"; }"
+                      + "else if (${source} == com.amydegregorio.mappers.util.Priorities.LOW) {"
+                      + "return \"LOW\"; }"
+                      + "else if (${source} == com.amydegregorio.mappers.util.Priorities.URGENT) {"
+                      + "return \"URGENT\"; }"
+                      +"else return \"\";"))
+                .add(conversion("status")
+                   .from("status").to("status")
+                   .type(JMapConversion.Type.DYNAMIC)
+                   .body("if (${source} == com.amydegregorio.mappers.util.Statuses.NOT_STARTED) {" 
+                      + "return \"NOT_STARTED\";}"
+                      + "else if (${source} == com.amydegregorio.mappers.util.Statuses.IN_PROGRESS) { "
+                      + "return \"IN_PROGRESS\";}"
+                      + "else if (${source} == com.amydegregorio.mappers.util.Statuses.COMPLETE) {"
+                      + "return \"COMPLETE\";} "
+                      + "return \"\";"))
+         );
+      
+      JMapperAPI incomingAPI = new JMapperAPI();
+      incomingAPI.add(mappedClass(Task.class).add(global())
+            .add(conversion("priority")
+            .from("priority").to("priority")
+            .type(JMapConversion.Type.DYNAMIC)
+            .body("if (${source}.equals(\"HIGH\")) {" 
+               + "return com.amydegregorio.mappers.util.Priorities.HIGH;}"
+               + "else if(${source}.equals(\"MEDIUM\")) {"
+               + "return com.amydegregorio.mappers.util.Priorities.MEDIUM;}"
+               + "else if(${source}.equals(\"LOW\")) {"
+               + "return com.amydegregorio.mappers.util.Priorities.LOW;}"
+               + "else if(${source}.equals(\"URGENT\")) {"
+               + "return com.amydegregorio.mappers.util.Priorities.URGENT;}"
+               + "else { return null;}"))
+            .add(conversion("status")
+            .from("status").to("status")
+            .type(JMapConversion.Type.DYNAMIC)
+            .body("if (${source}.equals(\"NOT_STARTED\")) {"
+               + "return com.amydegregorio.mappers.util.Statuses.NOT_STARTED;}"
+               + "else if(${source}.equals(\"IN_PROGRESS\")) {"
+               + "return com.amydegregorio.mappers.util.Statuses.IN_PROGRESS;}"
+               + "else if(${source}.equals(\"COMPLETE\")) {"
+               + "return com.amydegregorio.mappers.util.Statuses.COMPLETE;}"
+               + "else { return null;}"))
+         );
+      
+      outgoingMapper = new JMapper<>(TaskDto.class, Task.class, outgoingAPI);
+      incomingMapper = new JMapper<>(Task.class, TaskDto.class, incomingAPI);
    }
    
    @RequestMapping("/")
@@ -60,8 +118,9 @@ public class TaskJMapperController {
          model.addAttribute("action", "task/jmapper/add");
          return "task/jmapper/entry";
       }
-      
+      LOG.debug(taskDto.toString());
       Task task = incomingMapper.getDestination(taskDto);
+      LOG.debug(task.toString());
       taskRepository.save(task);
       return "redirect:/task/jmapper/";
    }
