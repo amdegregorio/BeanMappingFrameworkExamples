@@ -20,7 +20,8 @@ public class ApplicationConfig {
       return DozerBeanMapperBuilder.buildDefault();
    }
    
-   @Bean MapperFacade orikaMapper() {
+   @Bean 
+   public MapperFacade orikaMapper() {
       MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
       mapperFactory.classMap(Task.class, TaskDto.class)
          .byDefault()
